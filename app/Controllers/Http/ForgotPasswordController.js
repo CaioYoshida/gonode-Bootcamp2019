@@ -8,7 +8,7 @@ const Mail = use('Mail')
 class ForgotPasswordController {
   async store ({ request, response }) {
     try {
-      // when we need to seach just one field you can pass 'input' instead of 'all()' or 'only([])'
+      // when we need to request just one field you can pass 'input' instead of 'all()' or 'only([])'
       const email = request.input('email')
 
       const user = await User.findByOrFail('email', email)
@@ -17,8 +17,6 @@ class ForgotPasswordController {
       user.token_created_at = new Date()
 
       await user.save()
-
-      console.log('entrou')
 
       await Mail.send(
         ['emails.forgot_password'],
@@ -33,8 +31,6 @@ class ForgotPasswordController {
           message.subject('Recuperação de senha')
         }
       )
-
-      console.log('saiu')
     } catch (err) {
       return response.status(err.status).send({ error: { message: 'Invalid e-mail' } })
     }
@@ -42,7 +38,7 @@ class ForgotPasswordController {
 
   async update ({ request, response }) {
     try {
-      const { token, password } = request.all()
+      const { token, newPassword } = request.all()
 
       const user = await User.findByOrFail('token', token)
 
@@ -58,7 +54,7 @@ class ForgotPasswordController {
 
       user.token = null
       user.token_created_at = null
-      user.password = password
+      user.password = newPassword
 
       await user.save()
     } catch (err) {
