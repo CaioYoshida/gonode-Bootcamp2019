@@ -1,5 +1,7 @@
 'use strict'
 
+const Antl = use('Antl')
+
 class TaskStore {
   get validateAll () {
     return true
@@ -12,6 +14,10 @@ class TaskStore {
       title: 'required|string',
       due_date: 'date'
     }
+  }
+
+  get messages () {
+    return Antl.list('validation')
   }
 }
 
