@@ -1,5 +1,8 @@
 'use strict'
 
+const Kue = use('Kue')
+const Job = use('App/Jobs/NewTaskMail')
+
 const Mail = use('Mail')
 const Helpers = use('Helpers')
 
@@ -13,20 +16,7 @@ TaskHook.sendNewTaskMail = async taskInstance => {
 
   const { title } = taskInstance
 
-  await Mail.send(
-    ['emails.new_task'],
-    { username, title, hasAttachment: !!file },
-    message => {
-      message
-        .to(email)
-        .from('caio@gonode.com', 'Caio | Gonode')
-        .subject('Nova tarefa para voce')
-
-      if (file) {
-        message.attach(Helpers.tmpPath(`uploads/${file.file}`), {
-          filename: file.name
-        })
-      }
-    }
-  )
+  Kue.dispatch(Job.key, { email, username, title, file }, {
+    attempts: 3
+  })
 }

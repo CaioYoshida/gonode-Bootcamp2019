@@ -2,6 +2,7 @@
 
 const Env = use('Env')
 const Youch = use('Youch')
+const sentry = use('Sentry')
 
 const BaseExceptionHandler = use('BaseExceptionHandler')
 
@@ -21,7 +22,7 @@ class ExceptionHandler extends BaseExceptionHandler {
   }
 
   async report (error, { request }) {
-    console.log(error)
+    sentry.captureException(error)
   }
 }
 
